@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>高等数学预备测试</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- MathJax -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)'], ['$', '$']],
+        displayMath: [['\\[', '\\]'], ['$$', '$$']],
+        processEscapes: true
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-thumb { background-color: rgba(107, 114, 128, 0.6); border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <header class="bg-white shadow-md">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-semibold text-gray-900">高等数学预备测试（多选）</h1>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-6 py-8">
+    <form id="testForm" class="space-y-6"></form>
+    <div class="text-center mt-8">
+      <button id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg disabled:opacity-50" disabled>保存答案</button>
+    </div>
+  </main>
+
+  <script>
+    const questions = [
+      { q: '1. 若方程 \\(2x+5=13\\)，则 \\(x\\) 的值为？', o: ['\\(3\\)','\\(4\\)','\\(6\\)','\\(9\\)'], a:['B','C'] },
+      { q: '2. 下列数中质数是？', o: ['4','6','\\(2\\)','\\(3\\)','\\(5\\)','9','1'], a:['C','D'] },
+      { q: '3. 下列函数哪些是一阶函数？', o: ['\\(y=x^2\\)','\\(y=-2x+3\\)','\\(y=1/x\\)','\\(y=x^3-x\\)'], a:['B'] },
+      { q: '4. 若 A={1,2,3}, B={2,3,4}, A∩B 是？', o: ['{1,2}','{2,3}','{3,4}','{1,4}'], a:['B'] },
+      { q: '5. 下列等式正确的有？', o: ['\\((a+b)^2=a^2+b^2\\)','\\((a-b)^2=a^2-b^2\\)','\\((a+b)^2=a^2+2ab+b^2\\)','\\((a-b)^2=a^2+2ab+b^2\\)'], a:['C'] },
+      { q: '6. 以下哪个图形是直角三角形？', o: ['A','B'], a:['A'] },
+      { q: '7. 解不等式 \\(3x-2>4\\) 得到的范围？', o: ['\\(x>2\\)','\\(x>\\frac{2}{3}\\)','\\(x>\\frac{6}{3}\\)','\\(x>1\\)'], a:['B','D'] },
+      { q: '8. 函数 \\(f(x)=x^2-4x+4\\) 在 x=2 处值？', o: ['\\(0\\)','\\(2\\)','\\(-4\\)','\\(4\\)'], a:['A'] },
+      { q: '9. 三角函数值哪些正确？', o: ['\\(\\sin30^\\circ=\\frac{1}{2}\\)','\\(\\cos60^\\circ=\\frac{\\sqrt{3}}{2}\\)','\\(\\tan45^\\circ=1\\)','\\(\\sin90^\\circ=0\\)'], a:['A','B'] },
+      { q: '10. 直线 \\(y=2x+1\\) 与 x 轴交点？', o: ['\\((-\\frac{1}{2},0)\\)','(0,1)','(-1,0)','(-1/2,1)'], a:['A'] },
+      { q: '11. 函数 \\(√{1-x^2}\\) 定义域？', o: ['(-∞,∞)','[-1,1]','(0,1)','(1,∞)'], a:['B'] },
+      { q: '12. \\(\\log_2{8} = x\\) 的 x？', o: ['2','3','4','1/3'], a:['B'] },
+      { q: '13. 抛物线 y=x^2-4x+3 顶点？', o: ['(2,-1)','(-2,3)','(1,0)','(0,3)'], a:['A'] },
+      { q: '14. 数列 2,4,8,16,... 通项？', o: ['2n','\\(2^n\\)','n²','2n'], a:['B'] },
+      { q: '15. 直角三角形 a=5,b=12,c？', o: ['13','17','\\(\\sqrt{119}\\)','\\(\\sqrt{169}\\)'], a:['A','D'] },
+      { q: '16. 函数 x³-3x 在 [-2,2] 上最大值？', o: ['-2','0','2','4'], a:['C'] },
+      { q: '17. 点 A(1,2),B(4,6) 距离？', o: ['3','4','5','6'], a:['C'] },
+      { q: '18. 矩阵 [[1,2],[3,4]] 行列式？', o: ['10','-2','-5','0'], a:['B'] },
+      { q: '19. 复数 z=1+i 的 |z|？', o: ['1','\\(\\sqrt{2}\\)','2','\\(\\sqrt{3}\\)'], a:['B'] },
+      { q: '20. 函数 \\( \\frac{x^2-1}{x-1} \\) 在 x→1 极限？', o: ['连续','\\(\\lim=2\\)','不存在','值=2'], a:['B'] }
+    ];
+
+    const form = document.getElementById('testForm');
+    questions.forEach((item, idx) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'bg-white shadow-lg rounded-2xl p-6';
+      const qText = document.createElement('p');
+      qText.className = 'text-lg font-medium mb-4';
+      qText.innerHTML = item.q;
+      wrapper.appendChild(qText);
+
+      const optsDiv = document.createElement('div');
+      optsDiv.className = 'grid grid-cols-1 sm:grid-cols-2 gap-4';
+      item.o.forEach((opt, j) => {
+        const label = document.createElement('label');
+        label.className = 'flex items-center space-x-2 cursor-pointer';
+        label.innerHTML = `
+          <input type="checkbox" name="q${idx+1}" value="${['A','B','C','D'][j]}" class="hidden peer" />
+          <div class="w-5 h-5 border-2 border-gray-300 rounded-md flex items-center justify-center peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-all">
+            <svg class="hidden w-4 h-4 text-white peer-checked:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
+          </div>
+          <span class="select-none">${opt}</span>
+        `;
+        optsDiv.appendChild(label);
+      });
+      wrapper.appendChild(optsDiv);
+      form.appendChild(wrapper);
+    });
+
+    // 触发 MathJax 渲染
+    // document.addEventListener("DOMContentLoaded", () => {
+    //   if (window.MathJax) {
+    //     MathJax = {
+    //         tex: {
+    //             inlineMath: [['\\(', '\\)'], ['$', '$']],
+    //             displayMath: [['\\[', '\\]'], ['$$', '$$']],
+    //             processEscapes: true
+    //         }
+    //     };
+    //     MathJax.typesetPromise();
+    //   }
+    // });
+
+    const saveBtn = document.getElementById('saveBtn');
+    form.addEventListener('change', () => {
+      const allAnswered = questions.every((_, i) =>
+        form.querySelectorAll(`input[name=q${i+1}]:checked`).length > 0
+      );
+      saveBtn.disabled = !allAnswered;
+    });
+
+    saveBtn.addEventListener('click', () => {
+      const answers = {};
+      questions.forEach((_, i) => {
+        answers[i+1] = Array.from(form.querySelectorAll(`input[name=q${i+1}]:checked`)).map(input => input.value);
+      });
+      localStorage.setItem('math_prep_answers', JSON.stringify(answers));
+      alert('答案已保存！');
+    });
+  </script>
+</body>
+</html>
