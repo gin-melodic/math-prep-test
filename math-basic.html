@@ -23,6 +23,18 @@
   <style>
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-thumb { background-color: rgba(107, 114, 128, 0.6); border-radius: 4px; }
+    /* Ensuring sr-only works as expected for visually hiding the input but keeping it accessible */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
@@ -75,14 +87,28 @@
       const optsDiv = document.createElement('div');
       optsDiv.className = 'grid grid-cols-1 sm:grid-cols-2 gap-4';
       item.o.forEach((opt, j) => {
+        const optionValue = ['A','B','C','D','E','F'][j]; // Assuming up to 6 options, adjust if more
+        const inputId = `q${idx}_opt${j}`;
+
         const label = document.createElement('label');
-        label.className = 'flex items-center space-x-2 cursor-pointer';
+        label.className = 'block'; // Make label a block container
+        label.setAttribute('for', inputId);
+
         label.innerHTML = `
-          <input type="checkbox" name="q${idx+1}" value="${['A','B','C','D'][j]}" class="hidden peer" />
-          <div class="w-5 h-5 border-2 border-gray-300 rounded-md flex items-center justify-center peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-all">
-            <svg class="hidden w-4 h-4 text-white peer-checked:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
+          <input type="checkbox" name="q${idx+1}" value="${optionValue}" id="${inputId}" class="sr-only peer" />
+          <div class="
+            w-full p-4 border rounded-xl shadow 
+            bg-white text-gray-800 border-gray-300 
+            hover:border-sky-400 hover:shadow-lg
+            peer-checked:bg-sky-500 peer-checked:border-sky-600 peer-checked:text-white peer-checked:shadow-xl
+            transition-all duration-200 ease-in-out 
+            flex justify-between items-center cursor-pointer
+          ">
+            <span class="select-none text-base">${opt}</span>
+            <svg class="hidden w-6 h-6 peer-checked:block" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
           </div>
-          <span class="select-none">${opt}</span>
         `;
         optsDiv.appendChild(label);
       });
@@ -90,19 +116,10 @@
       form.appendChild(wrapper);
     });
 
-    // 触发 MathJax 渲染
-    // document.addEventListener("DOMContentLoaded", () => {
-    //   if (window.MathJax) {
-    //     MathJax = {
-    //         tex: {
-    //             inlineMath: [['\\(', '\\)'], ['$', '$']],
-    //             displayMath: [['\\[', '\\]'], ['$$', '$$']],
-    //             processEscapes: true
-    //         }
-    //     };
-    //     MathJax.typesetPromise();
-    //   }
-    // });
+    // 触发 MathJax 渲染 (MathJax 3 typically auto-renders on DOM ready if configured globally)
+    // if (window.MathJax && window.MathJax.typesetPromise) {
+    //   window.MathJax.typesetPromise();
+    // }
 
     const saveBtn = document.getElementById('saveBtn');
     form.addEventListener('change', () => {
